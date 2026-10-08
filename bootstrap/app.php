@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (AuthenticationException $e, Request $request) {
-            return response()->json(['error' => 'Belum login atau session expired'], 401);
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Belum login atau token tidak valid/kedaluwarsa.',
+                ], 401);
+            }
         });
     })->create();

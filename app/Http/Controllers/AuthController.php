@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $token = auth('api')->attempt($request->only('email', 'password'));
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        $token = auth('api')->attempt($credentials);
 
         if (!$token) {
             return response()->json(['error' => 'Email or password is invalid'], 401);
@@ -19,17 +25,14 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
         ]);
 
-        $user = \App\Models\User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-        ]);
+        $data['password'] = bcrypt($data['password']);
+        $user = User::create($data);
 
         $token = auth('api')->login($user);
 
