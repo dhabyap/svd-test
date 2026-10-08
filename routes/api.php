@@ -12,6 +12,6 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::apiResource('users', UserController::class);
+    Route::apiResource('users', UserController::class)->except(['store']);
     Route::apiResource('users.hobbies', HobbyController::class);
 });
