@@ -179,7 +179,4 @@ php artisan test
 
 ---
 
-## Dokumentasi Tambahan
 
-- [CRUD-COMPLETENESS-CHECK.md](./CRUD-COMPLETENESS-CHECK.md) — Matriks pemenuhan spesifikasi soal tugas.
-- [DUAL-AUTH-EXPLAINED.md](./DUAL-AUTH-EXPLAINED.md) — Penjelasan arsitektur dual-auth (Session di Web vs JWT di API).
