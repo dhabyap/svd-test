@@ -1,58 +1,185 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Tugas: CRUD User & Hobi (Blade + REST API + JWT Authentication)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi Laravel yang mengimplementasikan CRUD untuk data **User** yang berelasi **one-to-many** dengan data **Hobi (Hobby)**, dilengkapi antarmuka web (Blade) dan REST API yang diamankan menggunakan JWT Authentication.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 1. Web (Blade UI)
+- **Autentikasi (Session):**
+  - Register akun baru (`/register`).
+  - Login (`/login`) & Logout (`/logout`).
+  - Halaman tamu dialihkan ke login saat mengakses rute terproteksi.
+- **Kelola User (`/users`):**
+  - Daftar semua user beserta daftar hobi masing-masing.
+  - Tambah user baru sekaligus input banyak hobi secara dinamis (tombol *Tambah Hobi* via JavaScript).
+  - Edit user (nama, email, opsi ganti password) dan perbarui daftar hobinya.
+  - Hapus user (hobi terkait ikut terhapus otomatis/cascade).
+  - Pagination & alert status aksi.
+- **Kelola Hobi (`/hobbies`):**
+  - CRUD hobi milik user yang sedang login.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 2. REST API (JSON)
+- **Autentikasi JWT (`tymon/jwt-auth`):**
+  - `POST /api/register` — registrasi, mengembalikan token JWT.
+  - `POST /api/login` — login dengan email & password, mengembalikan token JWT.
+  - `POST /api/logout` — invalidasi token (butuh header `Authorization: Bearer <token>`).
+  - Respons 401 jelas jika token tidak ada, salah, atau kedaluwarsa:
+    ```json
+    {"message": "Belum login atau token tidak valid/kedaluwarsa."}
+    ```
+- **CRUD User API (`/api/users`):**
+  - `GET /api/users` — daftar profil (terproteksi JWT).
+  - `GET /api/users/{user}` — detail profil pemilik token.
+  - `PUT /api/users/{user}` — update profil pemilik token.
+  - `DELETE /api/users/{user}` — hapus akun pemilik token.
+- **CRUD Hobi API (`/api/users/{user}/hobbies`):**
+  - `GET /api/users/{user}/hobbies` — daftar hobi user.
+  - `POST /api/users/{user}/hobbies` — tambah hobi untuk user.
+  - `GET /api/users/{user}/hobbies/{hobby}` — detail hobi.
+  - `PUT /api/users/{user}/hobbies/{hobby}` — update hobi.
+  - `DELETE /api/users/{user}/hobbies/{hobby}` — hapus hobi.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Kebutuhan Sistem
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- PHP `>= 8.2` (disarankan PHP 8.4)
+- Composer
+- MySQL / MariaDB (misal via Laragon)
+- Ekstensi PHP: `pdo_mysql`, `openssl`, `mbstring`, `tokenizer`, `xml`, `ctype`, `json`
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## Panduan Instalasi & Menjalankan
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+1. **Clone repository:**
+   ```bash
+   git clone <url-repository>
+   cd laravel
+   ```
 
+2. **Install dependency:**
+   ```bash
+   composer install
+   ```
+
+3. **Konfigurasi Environment:**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+   Sesuaikan koneksi database di file `.env`:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=svd
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+
+4. **Generate JWT Secret:**
+   ```bash
+   php artisan jwt:secret
+   ```
+
+5. **Jalankan Migrasi:**
+   ```bash
+   php artisan migrate
+   ```
+
+6. **Jalankan Server Development:**
+   ```bash
+   php artisan serve
+   ```
+   Aplikasi dapat diakses di `http://127.0.0.1:8000`.
+
+---
+
+## Daftar Rute
+
+### Web (Blade)
+| Method | URI | Nama Route | Keterangan |
+|---|---|---|---|
+| GET | `/login` | `login` | Form login |
+| POST | `/login` | `login.store` | Proses login |
+| GET | `/register` | `register` | Form register |
+| POST | `/register` | `register.store` | Proses register |
+| POST | `/logout` | `logout` | Logout |
+| GET | `/users` | `web.users.index` | Tabel user & daftar hobi |
+| GET | `/users/create` | `web.users.create` | Form tambah user + input hobi |
+| POST | `/users` | `web.users.store` | Simpan user & hobi |
+| GET | `/users/{user}/edit` | `web.users.edit` | Form edit user & hobi |
+| PUT | `/users/{user}` | `web.users.update` | Perbarui user & hobi |
+| DELETE | `/users/{user}` | `web.users.destroy` | Hapus user & hobinya |
+| GET | `/hobbies` | `hobbies.index` | Daftar hobi user aktif |
+| GET | `/hobbies/create` | `hobbies.create` | Form tambah hobi |
+| POST | `/hobbies` | `hobbies.store` | Simpan hobi baru |
+| GET | `/hobbies/{hobby}/edit` | `hobbies.edit` | Form edit hobi |
+| PUT | `/hobbies/{hobby}` | `hobbies.update` | Perbarui hobi |
+| DELETE | `/hobbies/{hobby}` | `hobbies.destroy` | Hapus hobi |
+
+### API (JSON, Base: `/api`)
+| Method | URI | Auth | Keterangan |
+|---|---|---|---|
+| POST | `/api/register` | Publik | Register via API |
+| POST | `/api/login` | Publik | Login, mengembalikan token JWT |
+| POST | `/api/logout` | `Bearer <token>` | Logout & invalidasi token |
+| GET | `/api/users` | `Bearer <token>` | Lihat profil pemilik token |
+| GET | `/api/users/{user}` | `Bearer <token>` | Detail profil |
+| PUT | `/api/users/{user}` | `Bearer <token>` | Update profil |
+| DELETE | `/api/users/{user}` | `Bearer <token>` | Hapus akun |
+| GET | `/api/users/{user}/hobbies` | `Bearer <token>` | Daftar hobi user |
+| POST | `/api/users/{user}/hobbies` | `Bearer <token>` | Tambah hobi |
+| GET | `/api/users/{user}/hobbies/{hobby}` | `Bearer <token>` | Detail hobi |
+| PUT | `/api/users/{user}/hobbies/{hobby}` | `Bearer <token>` | Update hobi |
+| DELETE | `/api/users/{user}/hobbies/{hobby}` | `Bearer <token>` | Hapus hobi |
+
+---
+
+## Contoh Pengujian API (cURL / Postman)
+
+### 1. Login untuk Mendapatkan Token
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+curl -X POST http://127.0.0.1:8000/api/login \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"email":"budi@example.test","password":"password123"}'
+```
+Respons:
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Akses Endpoint Terproteksi
+```bash
+curl -X GET http://127.0.0.1:8000/api/users \
+  -H "Authorization: Bearer <TOKEN_ANDA>" \
+  -H "Accept: application/json"
+```
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Menjalankan Pengujian Otomatis (Tests)
 
-## Code of Conduct
+Proyek ini dilengkapi test suite (23 tests, 91 assertions) yang mencakup:
+- Web User CRUD (form, hobi dinamis, cascade delete, proteksi auth).
+- Web Hobby CRUD.
+- API Authentication & JWT (format 401 saat token absen/salah, proteksi profil).
+- API User & Hobby CRUD.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Jalankan pengujian:
+```bash
+php artisan test
+```
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Dokumentasi Tambahan
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- [CRUD-COMPLETENESS-CHECK.md](./CRUD-COMPLETENESS-CHECK.md) — Matriks pemenuhan spesifikasi soal tugas.
+- [DUAL-AUTH-EXPLAINED.md](./DUAL-AUTH-EXPLAINED.md) — Penjelasan arsitektur dual-auth (Session di Web vs JWT di API).
