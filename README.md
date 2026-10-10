@@ -139,30 +139,5 @@ Aplikasi Laravel yang mengimplementasikan CRUD untuk data **User** yang berelasi
 
 ---
 
-## Contoh Pengujian API (cURL / Postman)
-
-### 1. Login untuk Mendapatkan Token
-```bash
-curl -X POST http://127.0.0.1:8000/api/login \
-  -H "Content-Type: application/json" \
-  -H "Accept: application/json" \
-  -d '{"email":"budi@example.test","password":"password123"}'
-```
-Respons:
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-### 2. Akses Endpoint Terproteksi
-```bash
-curl -X GET http://127.0.0.1:8000/api/users \
-  -H "Authorization: Bearer <TOKEN_ANDA>" \
-  -H "Accept: application/json"
-```
-
----
-
 
 
