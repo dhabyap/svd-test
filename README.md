@@ -164,19 +164,5 @@ curl -X GET http://127.0.0.1:8000/api/users \
 
 ---
 
-## Menjalankan Pengujian Otomatis (Tests)
-
-Proyek ini dilengkapi test suite (23 tests, 91 assertions) yang mencakup:
-- Web User CRUD (form, hobi dinamis, cascade delete, proteksi auth).
-- Web Hobby CRUD.
-- API Authentication & JWT (format 401 saat token absen/salah, proteksi profil).
-- API User & Hobby CRUD.
-
-Jalankan pengujian:
-```bash
-php artisan test
-```
-
----
 
 
