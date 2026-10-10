@@ -183,6 +183,7 @@
             <a class="brand" href="{{ route('hobbies.index') }}">Hobby Saya</a>
             @auth
                 <div class="nav-right">
+                    <a class="link" href="{{ route('web.users.index') }}" style="color:#9db4ff">Kelola User</a>
                     <span>{{ auth()->user()->name }}</span>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
